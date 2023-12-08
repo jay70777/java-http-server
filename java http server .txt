@@ -1,0 +1,39 @@
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+
+public class SimpleHttpServer {
+    public static void main(String[] args) throws IOException {
+        int port = 8000; // Choose your desired port number
+
+        // Create an HttpServer instance on the specified port
+        HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
+
+        // Create a context for the root path and set the handler
+        server.createContext("/", new MyHandler());
+
+        // Set the executor to null (use the default executor)
+        server.setExecutor(null);
+
+        // Start the server
+        server.start();
+
+        System.out.println("Server is running on port " + port);
+    }
+
+    static class MyHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            // Send a simple response when a request is received
+            String response = "Hello, this is your Java HTTP server!";
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+}
